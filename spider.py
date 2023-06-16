@@ -1,5 +1,5 @@
+from urllib import request
 from urllib.request import urlopen
-from bs4 import BeautifulSoup as bf
 import json
 import pickle
 import time
@@ -14,7 +14,10 @@ import time
 """
 
 # 在这里设置关键词
-key_words = ["man", "woman"]
+key_words = ["animal", "woman"]
+
+# 设置请求头，模拟用户访问
+headers = { 'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:65.0) Gecko/20100101 Firefox/65.0' }
 
 # 根据关键词获得所对应的链接
 def get_url_from_key_words(key_words):
@@ -37,7 +40,9 @@ def get_url_from_key_words(key_words):
 
 # 根据链接获取每一张图片所对应的具体网页信息
 def get_key_link(url):
-    html = urlopen(url).read()
+    # 创建请求
+    response = request.Request(url, headers=headers)
+    html = urlopen(response).read()
     json_data = json.loads(html)
     ret = []
     for i in json_data['items']:
@@ -50,7 +55,7 @@ def get_key_link(url):
         if 'image_urls' in i:
             data['image_urls'] = i['image_urls']
         else:
-            data['image_urls'] = i['image_url']
+            data['image_urls'] = [i['image_url']]
         ret.append(data)
     return ret
 
